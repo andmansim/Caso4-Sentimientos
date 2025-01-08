@@ -27,79 +27,50 @@ modelo_randomforest.fit(X_train, y_train)
 # Realizar las predicciones
 y_pred = modelo_randomforest.predict(X_test)
 
-# Evaluar el rendimiento del modelo
-print("Accuracy del modelo:", accuracy_score(y_test, y_pred))
-print("\nReporte de clasificación:\n", classification_report(y_test, y_pred))
+if __name__ == '__main__':
+
+    # Evaluar el rendimiento del modelo
+    print("Accuracy del modelo:", accuracy_score(y_test, y_pred))
+    print("\nReporte de clasificación:\n", classification_report(y_test, y_pred))
+    
+    import joblib
+    joblib.dump(modelo_randomforest, 'modelo_randomforest.pkl')
+
+    #añadimos la clasificacion al csv
+    df['sentimiento_predicho'] = modelo_randomforest.predict(X)
+
+    #-------------------Gráficas-------------------
+    import matplotlib.pyplot as plt
+
+    # Contamos las clases predichas
+    import seaborn as sns
+
+    sns.countplot(y_pred)
+    plt.title('Distribución de Sentimientos Predichos')
+    plt.xlabel('Sentimiento')
+    plt.ylabel('Frecuencia')
+    plt.savefig('Distribución de Sentimientos Predichos.png')
+    plt.show()
 
 
+    from collections import Counter
 
-#-------------------Gráficas-------------------
-import matplotlib.pyplot as plt
+    # Unir todas las palabras procesadas en una sola lista
+    todas_las_palabras = [palabra for texto in df['procesado'] for palabra in texto]
 
-# Contamos las clases predichas
-import seaborn as sns
+    # Contar la frecuencia de cada palabra
+    frecuencia_palabras = Counter(todas_las_palabras)
 
-sns.countplot(y_pred)
-plt.title('Distribución de Sentimientos Predichos')
-plt.xlabel('Sentimiento')
-plt.ylabel('Frecuencia')
-plt.savefig('Distribución de Sentimientos Predichos.png')
-plt.show()
+    # Mostrar las 10 palabras más comunes
+    print(frecuencia_palabras.most_common(10))
 
 
-from collections import Counter
+    # Graficar las 10 palabras más comunes
+    palabras, frecuencia = zip(*frecuencia_palabras.most_common(10))
 
-# Unir todas las palabras procesadas en una sola lista
-todas_las_palabras = [palabra for texto in df['procesado'] for palabra in texto]
-
-# Contar la frecuencia de cada palabra
-frecuencia_palabras = Counter(todas_las_palabras)
-
-# Mostrar las 10 palabras más comunes
-print(frecuencia_palabras.most_common(10))
-
-
-# Graficar las 10 palabras más comunes
-palabras, frecuencia = zip(*frecuencia_palabras.most_common(10))
-
-plt.barh(palabras, frecuencia)
-plt.xlabel('Frecuencia')
-plt.ylabel('Palabra')
-plt.title('Palabras Más Comunes en los Comentarios')
-plt.savefig('Palabras Más Comunes en los Comentarios.png')
-plt.show()
-
-
-#-------------------Clasificación de nuevos textos-------------------
-from proces_lenguaje import procesar_texto
-import numpy as np
-from vectorizacion import obtener_vector_promedio
-# Probando con un nuevo comentario
-comentarios = [
-    "I love this product, it is amazing!",  # Comentario positivo
-    "This is the worst thing I have ever bought.",  # Comentario negativo
-    "The product is okay, not great, but not bad either."  # Comentario neutral
-]
-
-# Procesar los comentarios y obtener los vectores promedio
-comentarios_procesados = [procesar_texto(comentario) for comentario in comentarios]
-X_nuevos_comentarios = np.array([obtener_vector_promedio(texto, model) for texto in comentarios_procesados])
-
-# Hacer predicciones con el modelo RandomForest
-predicciones = modelo_randomforest.predict(X_nuevos_comentarios)
-
-# Mostrar los resultados
-for comentario, prediccion in zip(comentarios, predicciones):
-    print(f"Comentario: '{comentario}'")
-    print(f"Sentimiento Predicho: {prediccion}")
-    print("-------------")
-
-# Si quieres saber el porcentaje de las clases en el conjunto de pruebas
-import seaborn as sns
-import matplotlib.pyplot as plt
-
-sns.countplot(predicciones)
-plt.title('Distribución de Sentimientos Predichos')
-plt.xlabel('Sentimiento')
-plt.ylabel('Frecuencia')
-plt.show()
+    plt.barh(palabras, frecuencia)
+    plt.xlabel('Frecuencia')
+    plt.ylabel('Palabra')
+    plt.title('Palabras Más Comunes en los Comentarios')
+    plt.savefig('Palabras Más Comunes en los Comentarios.png')
+    plt.show()

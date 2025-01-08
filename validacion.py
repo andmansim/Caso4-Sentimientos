@@ -1,0 +1,37 @@
+#-------------------Clasificación de nuevos textos-------------------
+from proces_lenguaje import procesar_texto
+import numpy as np
+from vectorizacion import obtener_vector_promedio
+from ia import modelo_randomforest, model
+
+
+
+# Probando con un nuevo comentario
+comentarios = [
+    "I love this product, it is amazing!",  # Comentario positivo
+    "This is the worst thing I have ever bought.",  # Comentario negativo
+    "The product is okay, not great, but not bad either."  # Comentario neutral
+]
+
+# Procesar los comentarios y obtener los vectores promedio
+comentarios_procesados = [procesar_texto(comentario) for comentario in comentarios]
+X_nuevos_comentarios = np.array([obtener_vector_promedio(texto, model) for texto in comentarios_procesados])
+
+# Hacer predicciones con el modelo RandomForest
+predicciones = modelo_randomforest.predict(X_nuevos_comentarios)
+
+# Mostrar los resultados
+for comentario, prediccion in zip(comentarios, predicciones):
+    print(f"Comentario: '{comentario}'")
+    print(f"Sentimiento Predicho: {prediccion}")
+    print("-------------")
+
+# Si quieres saber el porcentaje de las clases en el conjunto de pruebas
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+sns.countplot(predicciones)
+plt.title('Distribución de Sentimientos Predichos')
+plt.xlabel('Sentimiento')
+plt.ylabel('Frecuencia')
+plt.show()

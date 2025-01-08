@@ -35,12 +35,14 @@ def obtener_vector_promedio(texto, model):
         # Si no hay palabras en el vocabulario, retornamos un vector de ceros
         return np.zeros(model.vector_size)
 
+
 # Obtener el vector promedio para cada fila
 X_word2vec = np.array([obtener_vector_promedio(texto, model) for texto in df['procesado']])
 
-# Ver el tamaño de la matriz de vectores resultante (filas = documentos, columnas = dimensiones del vector)
-print("Matriz de vectores Word2Vec de tamaño:", X_word2vec.shape)
+if __name__ == '__main__':
+    # Ver el tamaño de la matriz de vectores resultante (filas = documentos, columnas = dimensiones del vector)
+    print("Matriz de vectores Word2Vec de tamaño:", X_word2vec.shape)
 
-# Ver los primeros vectores para observar cómo se ven
-print("Primeros 3 vectores promedios de Word2Vec:")
-print(X_word2vec[:3])  # Primeros 3 textos transformados en vectores
+    # Ver los primeros vectores para observar cómo se ven
+    print("Primeros 3 vectores promedios de Word2Vec:")
+    print(X_word2vec[:3])  # Primeros 3 textos transformados en vectores
