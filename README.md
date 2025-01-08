@@ -28,7 +28,7 @@ Limpiar y leer los datos
     Posibles modelos: RandomForestClassifier, XGBoostClassifier y puede que un árbol simple de deciión. 
 
 Requisitos:
-    - Capaz de recopilar y almacenar los comentarios (que tenga memoria y funcione bien)
+    - Capaz de recopilar y almacenar los comentarios 
     - Hacer todo lo del procesamiento del lengaje 
     - Clasificar los datos según los 3 sentimientos, además del grado de intensidad. Esto con una puntuación positiva o negativa. 
     - Mostrar % de los resultados y el tema más recurrente mencionado. 
