@@ -16,14 +16,14 @@ Limpiar y leer los datos
 2. Vectorización
     - TF-IDF, calcular la importancia de las palabras, según su frecuencia en el texto. 
     - Word Embeddings, crear los vectores en fucnión de sus relaciones semánticas
-3. Aplicar IA
+3. Elegir modelos me ML, incluye modelos avanzamos como estos o modelos más sencillos. 
     Modelos clásicos
     - Naive bayes
     - SVM 
     Modelos avanzamos
     - Transformes (GPT, BERT)
     - RNN
-4. Aprendizaje supervisado
+4. Entrenar
     Hacer un modelo de aprendizaje suprvisado como siempre, divides en train y test. Lo lanzas, ajustas cositas, optimizas y validas. 
     Posibles modelos: RandomForestClassifier, XGBoostClassifier y puede que un árbol simple de deciión. 
 
