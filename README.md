@@ -27,3 +27,9 @@ Limpiar y leer los datos
     Hacer un modelo de aprendizaje suprvisado como siempre, divides en train y test. Lo lanzas, ajustas cositas, optimizas y validas. 
     Posibles modelos: RandomForestClassifier, XGBoostClassifier y puede que un árbol simple de deciión. 
 
+Requisitos:
+    - Capaz de recopilar y almacenar los comentarios (que tenga memoria y funcione bien)
+    - Hacer todo lo del procesamiento del lengaje 
+    - Clasificar los datos según los 3 sentimientos, además del grado de intensidad. Esto con una puntuación positiva o negativa. 
+    - Mostrar % de los resultados y el tema más recurrente mencionado. 
+    - Graficar los resultados poara ver patrones y tendencias
