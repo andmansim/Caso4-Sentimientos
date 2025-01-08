@@ -43,6 +43,7 @@ sns.countplot(y_pred)
 plt.title('Distribución de Sentimientos Predichos')
 plt.xlabel('Sentimiento')
 plt.ylabel('Frecuencia')
+plt.savefig('Distribución de Sentimientos Predichos.png')
 plt.show()
 
 
@@ -58,14 +59,6 @@ frecuencia_palabras = Counter(todas_las_palabras)
 print(frecuencia_palabras.most_common(10))
 
 
-# Graficar distribución de sentimientos predichos
-sns.countplot(y_pred)
-plt.title('Distribución de Sentimientos Predichos')
-plt.xlabel('Sentimiento')
-plt.ylabel('Frecuencia')
-plt.show()
-
-
 # Graficar las 10 palabras más comunes
 palabras, frecuencia = zip(*frecuencia_palabras.most_common(10))
 
@@ -73,4 +66,5 @@ plt.barh(palabras, frecuencia)
 plt.xlabel('Frecuencia')
 plt.ylabel('Palabra')
 plt.title('Palabras Más Comunes en los Comentarios')
+plt.savefig('Palabras Más Comunes en los Comentarios.png')
 plt.show()
