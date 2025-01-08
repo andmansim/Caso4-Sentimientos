@@ -14,15 +14,34 @@ nltk.download('stopwords')
 nltk.download('wordnet')
 
 def procesar_texto(texto):
+    # texto = texto.lower()
+    # texto = re.sub(r"[\W\d_]+", " ", texto)
+    # palabras = word_tokenize(texto)
+    # stop_words = set(stopwords.words("english"))
+    # palabras = [palabra for palabra in palabras if palabra not in stop_words]
+    # stemmer = PorterStemmer()
+    # palabras = [stemmer.stem(palabra) for palabra in palabras]
+    # lemmatizer = WordNetLemmatizer()
+    # palabras = [lemmatizer.lemmatize(palabra) for palabra in palabras]
+    # return palabras
+   
+   
+    # Convertir el texto a minúsculas
     texto = texto.lower()
+    # Eliminar caracteres no alfabéticos y dígitos
     texto = re.sub(r"[\W\d_]+", " ", texto)
+    # Tokenización del texto
     palabras = word_tokenize(texto)
+    # Cargar stopwords en inglés
     stop_words = set(stopwords.words("english"))
+    
+    # Filtrar palabras no stopwords
     palabras = [palabra for palabra in palabras if palabra not in stop_words]
-    stemmer = PorterStemmer()
-    palabras = [stemmer.stem(palabra) for palabra in palabras]
+    
+    # Lematización (solo lematización, no stemming)
     lemmatizer = WordNetLemmatizer()
     palabras = [lemmatizer.lemmatize(palabra) for palabra in palabras]
+    
     return palabras
 
 # Cargamos los datos del csv
