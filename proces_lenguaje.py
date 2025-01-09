@@ -43,6 +43,9 @@ df = pd.read_csv("Sentimiento.csv", encoding="latin-1", sep=",")
 # Quitar aquellas palabras que van después de un # o un \
 df["texto"] = df["texto"].str.replace(r"(#\w+|\\\w+)", "", regex=True)
 
+# Expresión regular para recortar todo lo que está después de la URL base
+df['texto'] = df['texto'].str.replace(r"(https?://[^\s/]+)(/.*)?", r"\1", regex=True)
+
 #Los datos que queremos que separe está en la columna 'texto' y nos lo añade en la columna 'procesado'
 df['procesado'] = df['texto'].apply(procesar_texto)
 print(df.head())
