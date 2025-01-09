@@ -2,7 +2,13 @@
 from proces_lenguaje import procesar_texto
 import numpy as np
 from vectorizacion import obtener_vector_promedio
-from ia import modelo_randomforest, model
+import joblib
+from gensim.models import Word2Vec
+
+#cargamos el modelo guardado
+
+modelo_randomforest = joblib.load('modelo_randomforest.pkl')
+model = Word2Vec.load("word2vec_model.model")
 
 
 

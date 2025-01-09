@@ -26,6 +26,10 @@ def procesar_texto(texto):
     
     # Eliminar caracteres no alfabéticos y dígitos
     texto = re.sub(r"[\W\d_]+", " ", texto)
+    
+    # Eliminar caracteres no alfabéticos y dígitos
+    texto = re.sub(r"[^a-z\s]+", "", texto)  # Solo letras y espacios
+    
     # Tokenización del texto
     palabras = word_tokenize(texto)
     # Cargar stopwords en inglés
@@ -37,6 +41,9 @@ def procesar_texto(texto):
     # Lematización (solo lematización, no stemming)
     lemmatizer = WordNetLemmatizer()
     palabras = [lemmatizer.lemmatize(palabra) for palabra in palabras]
+    
+    # Excluir tokens no deseados (letras sueltas, etc.)
+    palabras = [palabra for palabra in palabras if len(palabra) > 1]
     
     return palabras
 
