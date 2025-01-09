@@ -20,6 +20,10 @@ def procesar_texto(texto):
    
     # Convertir el texto a minúsculas
     texto = texto.lower()
+    
+    # Eliminar URLs completas
+    texto = re.sub(r"https?://\S+|www\.\S+", "", texto)
+    
     # Eliminar caracteres no alfabéticos y dígitos
     texto = re.sub(r"[\W\d_]+", " ", texto)
     # Tokenización del texto
@@ -40,15 +44,18 @@ def procesar_texto(texto):
 import pandas as pd
 df = pd.read_csv("Sentimiento.csv", encoding="latin-1", sep=",")
 
-# Quitar aquellas palabras que van después de un # o un \
-df["texto"] = df["texto"].str.replace(r"(#\w+|\\\w+)", "", regex=True)
+# Asegurarnos de que no haya valores nulos en la columna 'texto'
+df['texto'] = df['texto'].fillna("")
 
-# Expresión regular para recortar todo lo que está después de la URL base
-df['texto'] = df['texto'].str.replace(r"(https?://[^\s/]+)(/.*)?", r"\1", regex=True)
+# Eliminar URLs completas y hashtags antes de procesar
+df["texto"] = df["texto"].str.replace(r"https?://\S+|www\.\S+", "", regex=True)  # Eliminar URLs
+df["texto"] = df["texto"].str.replace(r"(#\w+|\\\w+)", "", regex=True)          # Eliminar hashtags y backslashes
 
-#Los datos que queremos que separe está en la columna 'texto' y nos lo añade en la columna 'procesado'
+# Procesar texto y añadirlo a una nueva columna
 df['procesado'] = df['texto'].apply(procesar_texto)
-print(df.head())
-#Exportamos el nuevo csv con los datos procesados
-df.to_csv("Sentimiento_procesado.csv", index=False)
 
+# Revisar los datos procesados
+print(df.head())
+
+# Exportamos el nuevo CSV con los datos procesados
+df.to_csv("Sentimiento_procesado.csv", index=False, encoding="utf-8")
