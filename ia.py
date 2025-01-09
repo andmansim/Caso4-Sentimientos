@@ -5,6 +5,9 @@ from gensim.models import Word2Vec
 import pandas as pd
 import numpy as np
 
+
+print('cargamos los modelos y el csv')
+
 # Cargamos los datos procesados
 df = pd.read_csv("Sentimiento_procesado.csv")
 
@@ -14,6 +17,7 @@ model = Word2Vec.load("word2vec_model.model")
 # Cargar la matriz X_word2vec desde el archivo .npy
 X_word2vec = np.load("X_word2vec.npy")
 
+print('dividimos train y test')
 # Suponiendo que tienes una columna 'sentimiento' en tu DataFrame que contiene las etiquetas
 X = X_word2vec
 y = df['sentimiento']  # Etiquetas de sentimiento
@@ -21,14 +25,17 @@ y = df['sentimiento']  # Etiquetas de sentimiento
 # Dividir los datos en conjunto de entrenamiento y prueba (80% entrenamiento, 20% prueba)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
+print('Creamos el modelo')
 # Crear el clasificador Random Forest
-modelo_randomforest = RandomForestClassifier(n_estimatos=200, max_depth= 15, min_samples_split=10, min_samples_leaf= 5, bootstrap=True, random_state=42)
+modelo_randomforest = RandomForestClassifier(n_estimators=200, max_depth= 15, min_samples_split=10, min_samples_leaf= 5, bootstrap=True, random_state=42, n_jobs=-1)
 #n_estimators: 100 a 300, max_depth: 10 a 20, min_samples_split: 2 a 10, min_samples_leaf: 1 a 5, boos    
 
 # Entrenar el modelo
+print('Entrenando el modelo...')
 modelo_randomforest.fit(X_train, y_train)
 
 # Realizar las predicciones
+print('Prediciendo...')
 y_pred = modelo_randomforest.predict(X_test)
 
 
