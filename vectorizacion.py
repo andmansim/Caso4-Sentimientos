@@ -12,7 +12,8 @@ import pandas as pd
 df = pd.read_csv("Sentimiento_procesado.csv")
 
 # Entrenar el modelo Word2Vec
-model = Word2Vec(sentences=df['procesado'], vector_size=100, window=5, min_count=1, workers=4)
+model = Word2Vec(sentences=df['procesado'], vector_size=200, window=5, min_count=5, workers=4, sg = 0)
+#vector_size: 200 o 300, window = 5 a 10, min_count = 5, workers = 4 a 8, sg = 0 o 1 (0 para CBOW, va más rápido, 1 para Skip-gram)
 
 # Guardar el modelo
 model.save("word2vec_model.model")
@@ -38,11 +39,13 @@ def obtener_vector_promedio(texto, model):
 
 # Obtener el vector promedio para cada fila
 X_word2vec = np.array([obtener_vector_promedio(texto, model) for texto in df['procesado']])
+np.save("X_word2vec.npy", X_word2vec)
 
-if __name__ == '__main__':
-    # Ver el tamaño de la matriz de vectores resultante (filas = documentos, columnas = dimensiones del vector)
-    print("Matriz de vectores Word2Vec de tamaño:", X_word2vec.shape)
+print("Matriz X_word2vec calculada y guardada.")
 
-    # Ver los primeros vectores para observar cómo se ven
-    print("Primeros 3 vectores promedios de Word2Vec:")
-    print(X_word2vec[:3])  # Primeros 3 textos transformados en vectores
+# Ver el tamaño de la matriz de vectores resultante (filas = documentos, columnas = dimensiones del vector)
+print("Matriz de vectores Word2Vec de tamaño:", X_word2vec.shape)
+
+# Ver los primeros vectores para observar cómo se ven
+print("Primeros 3 vectores promedios de Word2Vec:")
+print(X_word2vec[:3])  # Primeros 3 textos transformados en vectores
