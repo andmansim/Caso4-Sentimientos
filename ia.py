@@ -4,12 +4,14 @@ from sklearn.metrics import classification_report, accuracy_score
 from gensim.models import Word2Vec
 import pandas as pd
 import numpy as np
+import ast
 
 
 print('cargamos los modelos y el csv')
 
 # Cargamos los datos procesados
 df = pd.read_csv("Sentimiento_procesado.csv")
+df['procesado'] = df['procesado'].apply(ast.literal_eval)
 
 #cargamos el modelo
 model = Word2Vec.load("word2vec_model.model")
@@ -28,7 +30,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 print('Creamos el modelo')
 # Crear el clasificador Random Forest
 modelo_randomforest = RandomForestClassifier(n_estimators=200, max_depth= 15, min_samples_split=10, min_samples_leaf= 5, bootstrap=True, random_state=42, n_jobs=-1)
-#n_estimators: 100 a 300, max_depth: 10 a 20, min_samples_split: 2 a 10, min_samples_leaf: 1 a 5, boos    
+#n_estimators: 100 a 300, max_depth: 10 a 20, min_samples_split: 2 a 10, min_samples_leaf: 1 a 5, bootstrap = True o False    
 
 # Entrenar el modelo
 print('Entrenando el modelo...')

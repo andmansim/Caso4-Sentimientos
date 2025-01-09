@@ -7,6 +7,7 @@ from nltk.stem import PorterStemmer
 from nltk.stem import WordNetLemmatizer
 import re
 import warnings
+
 warnings.filterwarnings("ignore")
 
 nltk.download('punkt_tab')
@@ -51,6 +52,7 @@ def procesar_texto(texto):
 import pandas as pd
 df = pd.read_csv("Sentimiento.csv", encoding="latin-1", sep=",")
 
+
 # Asegurarnos de que no haya valores nulos en la columna 'texto'
 df['texto'] = df['texto'].fillna("")
 
@@ -60,6 +62,7 @@ df["texto"] = df["texto"].str.replace(r"(#\w+|\\\w+)", "", regex=True)          
 
 # Procesar texto y añadirlo a una nueva columna
 df['procesado'] = df['texto'].apply(procesar_texto)
+
 
 # Revisar los datos procesados
 print(df.head())
