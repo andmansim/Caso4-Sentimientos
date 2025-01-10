@@ -83,12 +83,15 @@ df['sentimiento_predicho'] = modelo.predict(X)
 
 
 #-------------------Gráficas-------------------
+# Decodificar las etiquetas predichas
+y_pred_decoded = label_encoder.inverse_transform(y_pred)
+
 import matplotlib.pyplot as plt
 
 # Contamos las clases predichas
 import seaborn as sns
 
-sns.countplot(y_pred)
+sns.countplot(x=y_pred_decoded, order=['bad', 'neutral', 'good']) 
 plt.title('Distribución de Sentimientos Predichos')
 plt.xlabel('Sentimiento')
 plt.ylabel('Frecuencia')
