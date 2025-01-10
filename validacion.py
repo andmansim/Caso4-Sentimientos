@@ -16,7 +16,8 @@ model = Word2Vec.load("word2vec_model.model")
 comentarios = [
     "I love this product, it is amazing!",  # Comentario positivo
     "This is the worst thing I have ever bought.",  # Comentario negativo
-    "The product is okay, not great, but not bad either."  # Comentario neutral
+    "Potatoes and vegetables. Are vegetables. I don't know what to say. #Free_potatoes.",  # Comentario neutral
+    "Research preview of our newest model: ChatGPT're trying something new with this preview: Free and immediately available for everyone (no waitlist!)"
 ]
 
 # Procesar los comentarios y obtener los vectores promedio

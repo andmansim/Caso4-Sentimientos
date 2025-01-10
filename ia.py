@@ -5,7 +5,7 @@ from gensim.models import Word2Vec
 import pandas as pd
 import numpy as np
 import ast
-
+from sklearn.model_selection import GridSearchCV
 
 print('cargamos los modelos y el csv')
 
@@ -27,14 +27,63 @@ y = df['sentimiento']  # Etiquetas de sentimiento
 # Dividir los datos en conjunto de entrenamiento y prueba (80% entrenamiento, 20% prueba)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
+
+#----------------------------Calcular los mejores hiperparametros para un trozo de los datos--------------------------------
+
+# # Crear un subconjunto del 30% de los datos para el tuning
+# X_sample, _, y_sample, _ = train_test_split(X_train, y_train, test_size=0.7, random_state=42)
+
+
+
+
+# # Define el modelo base
+# modelo_randomforest = RandomForestClassifier(random_state=42)
+
+# # Define los hiperparámetros que quieres probar
+# param_grid = {
+#     'n_estimators': [100, 200],      # Número de árboles en el bosque
+#     'max_depth': [10, 15],           # Profundidad máxima de los árboles
+#     'min_samples_split': [2, 5],     # Mínimo de muestras para dividir un nodo
+#     'min_samples_leaf': [1, 2],       # Mínimo de muestras en una hoja
+#     'bootstrap': [True]           # Si se utiliza muestreo con reemplazo
+# }
+
+# grid_search = GridSearchCV(
+#     estimator=modelo_randomforest,
+#     param_grid=param_grid,
+#     cv=3,                # Solo 3 particiones en lugar de 5
+#     n_jobs=-1,
+#     scoring='accuracy', 
+#     verbose=3  # Nivel de detalle (3 es bastante informativo)
+# )
+
+# grid_search.fit(X_sample, y_sample)
+
+# print("Mejores parámetros encontrados:", grid_search.best_params_)
+# print("Mejor puntuación:", grid_search.best_score_)
+
+# # Usa el mejor modelo
+# mejor_modelo = grid_search.best_estimator_
+
+# mejor_modelo.fit(X_train, y_train)
+
+# y_pred = mejor_modelo.predict(X_test)
+
+
+#---------------------------------------------------------------------------
+
 print('Creamos el modelo')
 # Crear el clasificador Random Forest
-modelo_randomforest = RandomForestClassifier(n_estimators=200, max_depth= 15, min_samples_split=10, min_samples_leaf= 5, bootstrap=True, random_state=42, n_jobs=-1)
-#n_estimators: 100 a 300, max_depth: 10 a 20, min_samples_split: 2 a 10, min_samples_leaf: 1 a 5, bootstrap = True o False    
+# # modelo_randomforest = RandomForestClassifier(n_estimators=300, max_depth= 20, min_samples_split=10, min_samples_leaf= 5, bootstrap=True, random_state=42, n_jobs=-1)
+modelo_randomforest = RandomForestClassifier( bootstrap= True, max_depth= 15, min_samples_leaf= 2, min_samples_split= 2, n_estimators= 200, random_state=42, n_jobs=-1)
+# # #n_estimators: 100 a 300, max_depth: 10 a 20, min_samples_split: 2 a 10, min_samples_leaf: 1 a 5, bootstrap = True o False    
+
+
 
 # Entrenar el modelo
 print('Entrenando el modelo...')
 modelo_randomforest.fit(X_train, y_train)
+
 
 # Realizar las predicciones
 print('Prediciendo...')
@@ -45,6 +94,8 @@ y_pred = modelo_randomforest.predict(X_test)
 # Evaluar el rendimiento del modelo
 print("Accuracy del modelo:", accuracy_score(y_test, y_pred))
 print("\nReporte de clasificación:\n", classification_report(y_test, y_pred))
+
+
 
 import joblib
 joblib.dump(modelo_randomforest, 'modelo_randomforest.pkl')

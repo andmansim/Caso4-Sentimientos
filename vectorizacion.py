@@ -18,7 +18,7 @@ print(type(df['procesado'].iloc[0])   )
 
 
 # Entrenar el modelo Word2Vec
-model = Word2Vec(sentences = df['procesado'].tolist(), vector_size=200, window=5, min_count=5, workers=4, sg = 0)
+model = Word2Vec(sentences = df['procesado'].tolist(), vector_size=200, window=5, min_count=5, workers=4, sg = 1)
 #vector_size: 200 o 300, window = 5 a 10, min_count = 5, workers = 4 a 8, sg = 0 o 1 (0 para CBOW, va más rápido, 1 para Skip-gram)
 
 print("Modelo Word2Vec entrenado.")
