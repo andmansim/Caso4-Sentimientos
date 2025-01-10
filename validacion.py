@@ -7,7 +7,7 @@ from gensim.models import Word2Vec
 
 #cargamos el modelo guardado
 
-modelo_randomforest = joblib.load('modelo_randomforest.pkl')
+modelo_xgb = joblib.load('modelo_xgb.pkl')
 model = Word2Vec.load("word2vec_model.model")
 
 
@@ -24,8 +24,8 @@ comentarios = [
 comentarios_procesados = [procesar_texto(comentario) for comentario in comentarios]
 X_nuevos_comentarios = np.array([obtener_vector_promedio(texto, model) for texto in comentarios_procesados])
 
-# Hacer predicciones con el modelo RandomForest
-predicciones = modelo_randomforest.predict(X_nuevos_comentarios)
+# Hacer predicciones con el modelo xgb
+predicciones = modelo_xgb.predict(X_nuevos_comentarios)
 
 # Mostrar los resultados
 for comentario, prediccion in zip(comentarios, predicciones):
@@ -37,7 +37,7 @@ for comentario, prediccion in zip(comentarios, predicciones):
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-sns.countplot(predicciones)
+sns.countplot(predicciones, order=['bad', 'good', 'neutral'])
 plt.title('Distribución de Sentimientos Predichos')
 plt.xlabel('Sentimiento')
 plt.ylabel('Frecuencia')

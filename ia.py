@@ -91,7 +91,7 @@ import matplotlib.pyplot as plt
 # Contamos las clases predichas
 import seaborn as sns
 
-sns.countplot(x=y_pred_decoded, order=['bad', 'neutral', 'good']) 
+sns.countplot(x=y_pred_decoded, order=['bad', 'good','neutral']) 
 plt.title('Distribución de Sentimientos Predichos')
 plt.xlabel('Sentimiento')
 plt.ylabel('Frecuencia')
