@@ -1,11 +1,13 @@
 from sklearn.ensemble import RandomForestClassifier
+from xgboost import XGBClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report, accuracy_score
 from gensim.models import Word2Vec
 import pandas as pd
 import numpy as np
 import ast
-from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
+from sklearn.preprocessing import LabelEncoder
 
 print('cargamos los modelos y el csv')
 
@@ -28,9 +30,102 @@ y = df['sentimiento']  # Etiquetas de sentimiento
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
 
+
+print('Creamos el modelo')
+
+
+# Crear el clasificador Random Forest
+# # modelo_randomforest = RandomForestClassifier(n_estimators=300, max_depth= 20, min_samples_split=10, min_samples_leaf= 5, bootstrap=True, random_state=42, n_jobs=-1)
+modelo_randomforest = RandomForestClassifier( bootstrap= True, max_depth= 15, min_samples_leaf= 2, min_samples_split= 2, n_estimators= 200, random_state=42, n_jobs=-1)
+# # #n_estimators: 100 a 300, max_depth: 10 a 20, min_samples_split: 2 a 10, min_samples_leaf: 1 a 5, bootstrap = True o False    
+
+# Codificar las etiquetas si es necesario (si son 'bad', 'good', 'neutral')
+
+
+label_encoder = LabelEncoder()
+y_train_encoded = label_encoder.fit_transform(y_train)
+y_test_encoded = label_encoder.transform(y_test)
+
+
+xgb = XGBClassifier(
+    n_estimators=450,            # Número de árboles
+    max_depth=10,                # Profundidad máxima de los árboles
+    min_child_weight=10,          # Controla el peso mínimo de las hojas (equivalente a min_samples_leaf)
+    subsample=0.8,               # Usa todo el conjunto de entrenamiento (equivalente a bootstrap=True)
+    learning_rate=0.1,           # Tasa de aprendizaje, por defecto en XGBoost
+    colsample_bytree = 0.6,
+    random_state=42,             # Semilla aleatoria
+    n_jobs=-1                    # Usar todos los núcleos disponibles
+)
+modelo = xgb
+
+# Entrenar el modelo
+print('Entrenando el modelo...')
+modelo.fit(X_train, y_train_encoded)
+
+
+# Realizar las predicciones
+print('Prediciendo...')
+y_pred = modelo.predict(X_test)
+
+
+# Evaluar el rendimiento del modelo
+print("Accuracy del modelo:", accuracy_score(y_test_encoded, y_pred))
+print("\nReporte de clasificación:\n", classification_report(y_test_encoded, y_pred))
+
+
+
+import joblib
+joblib.dump(modelo, 'modelo_xgb.pkl')
+
+#añadimos la clasificacion al csv
+df['sentimiento_predicho'] = modelo.predict(X)
+
+
+#-------------------Gráficas-------------------
+import matplotlib.pyplot as plt
+
+# Contamos las clases predichas
+import seaborn as sns
+
+sns.countplot(y_pred)
+plt.title('Distribución de Sentimientos Predichos')
+plt.xlabel('Sentimiento')
+plt.ylabel('Frecuencia')
+plt.savefig('Distribución de Sentimientos Predichos.png')
+plt.show()
+
+
+from collections import Counter
+
+# Unir todas las palabras procesadas en una sola lista
+todas_las_palabras = [palabra for texto in df['procesado'] for palabra in texto]
+
+# Contar la frecuencia de cada palabra
+frecuencia_palabras = Counter(todas_las_palabras)
+
+# Mostrar las 10 palabras más comunes
+print(frecuencia_palabras.most_common(10))
+
+
+# Graficar las 10 palabras más comunes
+palabras, frecuencia = zip(*frecuencia_palabras.most_common(10))
+
+plt.barh(palabras, frecuencia)
+plt.xlabel('Frecuencia')
+plt.ylabel('Palabra')
+plt.title('Palabras Más Comunes en los Comentarios')
+plt.savefig('Palabras Más Comunes en los Comentarios.png')
+plt.show()
+
+
+
+
+
+
 #----------------------------Calcular los mejores hiperparametros para un trozo de los datos--------------------------------
 
-# # Crear un subconjunto del 30% de los datos para el tuning
+# Crear un subconjunto del 30% de los datos para el tuning
 # X_sample, _, y_sample, _ = train_test_split(X_train, y_train, test_size=0.7, random_state=42)
 
 
@@ -70,72 +165,54 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 # y_pred = mejor_modelo.predict(X_test)
 
 
-#---------------------------------------------------------------------------
 
-print('Creamos el modelo')
-# Crear el clasificador Random Forest
-# # modelo_randomforest = RandomForestClassifier(n_estimators=300, max_depth= 20, min_samples_split=10, min_samples_leaf= 5, bootstrap=True, random_state=42, n_jobs=-1)
-modelo_randomforest = RandomForestClassifier( bootstrap= True, max_depth= 15, min_samples_leaf= 2, min_samples_split= 2, n_estimators= 200, random_state=42, n_jobs=-1)
-# # #n_estimators: 100 a 300, max_depth: 10 a 20, min_samples_split: 2 a 10, min_samples_leaf: 1 a 5, bootstrap = True o False    
+#------------------------Probamos con un xgboost--------------------------------
+# Crear un subconjunto del 30% de los datos para el tuning
+# X_sample, _, y_sample, _ = train_test_split(X_train, y_train, test_size=0.7, random_state=42)
 
+# from xgboost import XGBClassifier
+# import numpy as np
+# from sklearn.model_selection import RandomizedSearchCV
+# from sklearn.preprocessing import LabelEncoder
 
+# # Codificar las etiquetas de sentimiento
+# label_encoder = LabelEncoder()
+# y_sample_encoded = label_encoder.fit_transform(y_sample)
 
-# Entrenar el modelo
-print('Entrenando el modelo...')
-modelo_randomforest.fit(X_train, y_train)
+# # Definir el espacio de hiperparámetros a explorar (con distribuciones)
+# param_dist = {
+#     'n_estimators': [400, 450, 500],
+#     'max_depth': [ 7, 10, 13],
+#     'learning_rate': [0.05, 0.1, 0.15],
+#     'subsample': [0.6, 0.8, 1.0],
+#     'colsample_bytree': [ 0.4, 0.6, 0.8],
+#     'min_child_weight': [ 10, 13, 15],
+# }
 
+# # Crear el clasificador XGBoost
+# xgb = XGBClassifier(random_state=42, n_jobs=-1)
 
-# Realizar las predicciones
-print('Prediciendo...')
-y_pred = modelo_randomforest.predict(X_test)
+# # Configurar RandomizedSearchCV
+# random_search = RandomizedSearchCV(
+#     estimator=xgb,
+#     param_distributions=param_dist,
+#     n_iter=50,  # Número de combinaciones aleatorias a probar
+#     scoring='accuracy',
+#     cv=3,
+#     n_jobs=-1,
+#     random_state=42,
+#     verbose=2
+# )
 
+# # Ajustar el modelo con RandomizedSearchCV usando X_sample y y_sample_encoded
+# print("Entrenando con RandomizedSearchCV...")
+# random_search.fit(X_sample, y_sample_encoded)
 
-
-# Evaluar el rendimiento del modelo
-print("Accuracy del modelo:", accuracy_score(y_test, y_pred))
-print("\nReporte de clasificación:\n", classification_report(y_test, y_pred))
-
-
-
-import joblib
-joblib.dump(modelo_randomforest, 'modelo_randomforest.pkl')
-
-#añadimos la clasificacion al csv
-df['sentimiento_predicho'] = modelo_randomforest.predict(X)
-
-
-#-------------------Gráficas-------------------
-import matplotlib.pyplot as plt
-
-# Contamos las clases predichas
-import seaborn as sns
-
-sns.countplot(y_pred)
-plt.title('Distribución de Sentimientos Predichos')
-plt.xlabel('Sentimiento')
-plt.ylabel('Frecuencia')
-plt.savefig('Distribución de Sentimientos Predichos.png')
-plt.show()
-
-
-from collections import Counter
-
-# Unir todas las palabras procesadas en una sola lista
-todas_las_palabras = [palabra for texto in df['procesado'] for palabra in texto]
-
-# Contar la frecuencia de cada palabra
-frecuencia_palabras = Counter(todas_las_palabras)
-
-# Mostrar las 10 palabras más comunes
-print(frecuencia_palabras.most_common(10))
+# # Obtener los mejores parámetros
+# print("\nMejores parámetros encontrados:", random_search.best_params_)
+# print("Mejor puntuación obtenida:", random_search.best_score_)
 
 
-# Graficar las 10 palabras más comunes
-palabras, frecuencia = zip(*frecuencia_palabras.most_common(10))
 
-plt.barh(palabras, frecuencia)
-plt.xlabel('Frecuencia')
-plt.ylabel('Palabra')
-plt.title('Palabras Más Comunes en los Comentarios')
-plt.savefig('Palabras Más Comunes en los Comentarios.png')
-plt.show()
+
+#-----------------------------------------------------------------------------------------------------
