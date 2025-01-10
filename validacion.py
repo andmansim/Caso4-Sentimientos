@@ -26,18 +26,27 @@ X_nuevos_comentarios = np.array([obtener_vector_promedio(texto, model) for texto
 
 # Hacer predicciones con el modelo xgb
 predicciones = modelo_xgb.predict(X_nuevos_comentarios)
+probabilidades = modelo_xgb.predict_proba(X_nuevos_comentarios)
+
+## Decodificar las etiquetas predichas
+# from sklearn.preprocessing import LabelEncoder
+# label_encoder = LabelEncoder()
+# label_encoder.fit(['bad', 'neutral', 'good'])  # Ajustar al conjunto de clases del modelo
 
 # Mostrar los resultados
-for comentario, prediccion in zip(comentarios, predicciones):
+for comentario, prediccion, probabilidad in zip(comentarios, predicciones, probabilidades):
+    # prediccion_clase = label_encoder.inverse_transform([prediccion])[0]  # Decodificar la clase
+    intensidad = max(probabilidad)  # Obtener la probabilidad máxima como intensidad
     print(f"Comentario: '{comentario}'")
     print(f"Sentimiento Predicho: {prediccion}")
+    print(f"Intensidad del Sentimiento: {intensidad:.2f}")
     print("-------------")
 
-# Si quieres saber el porcentaje de las clases en el conjunto de pruebas
+# Si quieres visualizar la distribución de las predicciones
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-sns.countplot(predicciones)
+sns.countplot(x=predicciones )
 plt.title('Distribución de Sentimientos Predichos')
 plt.xlabel('Sentimiento')
 plt.ylabel('Frecuencia')
