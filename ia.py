@@ -82,9 +82,34 @@ joblib.dump(modelo, 'modelo_xgb.pkl')
 df['sentimiento_predicho'] = modelo.predict(X)
 
 
-#-------------------Gráficas-------------------
+
+
+
+
+# Obtener probabilidades predichas
+y_pred_proba = modelo.predict_proba(X_test)
+
 # Decodificar las etiquetas predichas
 y_pred_decoded = label_encoder.inverse_transform(y_pred)
+
+
+
+
+# Crear un DataFrame con las probabilidades predichas
+
+# Crear un DataFrame con las probabilidades predichas
+df_intensidad = pd.DataFrame(y_pred_proba, columns=label_encoder.inverse_transform(range(len(label_encoder.classes_))))
+df_intensidad['intensidad_sentimiento'] = df_intensidad.max(axis=1)  # Máxima probabilidad para cada registro
+df_intensidad['Sentimiento'] = y_pred_decoded  # Sentimiento predicho (decodificado)
+
+# Agregar intensidad máxima al DataFrame original
+df['intensidad_sentimiento'] = modelo.predict_proba(X).max(axis=1)  # Máxima probabilidad predicha para cada registro
+df['sentimiento_predicho'] = label_encoder.inverse_transform(modelo.predict(X))  # Decodificar la clase predicha
+
+# Mostrar ejemplo del DataFrame
+print(df[['sentimiento_predicho', 'intensidad_sentimiento']].head())
+
+#-------------------Gráficas-------------------
 
 import matplotlib.pyplot as plt
 
@@ -119,6 +144,36 @@ plt.xlabel('Frecuencia')
 plt.ylabel('Palabra')
 plt.title('Palabras Más Comunes en los Comentarios')
 plt.savefig('Palabras Más Comunes en los Comentarios.png')
+plt.show()
+
+
+
+# Distribución de Intensidades por Sentimiento
+sns.boxplot(x='Sentimiento', y='intensidad_sentimiento', data=df_intensidad)
+plt.title('Distribución de Intensidad por Sentimiento')
+plt.xlabel('Sentimiento')
+plt.ylabel('Intensidad (Probabilidad)')
+plt.savefig('Distribución de Intensidad por Sentimiento.png')
+plt.show()
+
+
+
+
+
+# Visualizar promedios de intensidad
+df_avg_intensidad = df_intensidad.groupby('Sentimiento').mean().reset_index()
+
+df_avg_intensidad.plot(
+    kind='bar',
+    x='Sentimiento',
+    y=[col for col in df_avg_intensidad.columns if col != 'Sentimiento'],  # Excluir la columna 'Sentimiento'
+    stacked=True,
+    colormap='viridis'
+)
+plt.title('Promedio de Probabilidades por Sentimiento')
+plt.xlabel('Sentimiento')
+plt.ylabel('Probabilidad Promedio')
+plt.savefig('Promedio de Probabilidades por Sentimiento.png')
 plt.show()
 
 

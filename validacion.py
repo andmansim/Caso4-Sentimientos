@@ -37,7 +37,7 @@ for comentario, prediccion in zip(comentarios, predicciones):
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-sns.countplot(predicciones, order=['bad', 'good', 'neutral'])
+sns.countplot(predicciones)
 plt.title('Distribución de Sentimientos Predichos')
 plt.xlabel('Sentimiento')
 plt.ylabel('Frecuencia')
